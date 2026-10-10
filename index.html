@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix Reward Portal - احصل على حسابك المجاني</title>
-    <!-- استخدام Tailwind CSS للتصميم الاحترافي -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- خطوط وأيقونات FontAwesome -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JSZip للتعامل مع ملفات الـ ZIP داخل المتصفح -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -26,7 +28,6 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        /* تأثير النبض للزر */
         @keyframes pulse-glow {
             0%, 100% { box-shadow: 0 0 15px rgba(229, 9, 20, 0.5); }
             50% { box-shadow: 0 0 30px rgba(229, 9, 20, 0.8); }
@@ -42,10 +43,10 @@
     <header class="w-full py-5 px-8 flex justify-between items-center border-b border-zinc-800">
         <div class="flex items-center space-x-3 space-x-reverse">
             <span class="text-3xl font-black text-[#E50914] tracking-wider">NETFLIX</span>
-            <span class="bg-zinc-800 text-xs px-2.5 py-1 rounded-full text-zinc-400">Reward Hub</span>
+            <span class="bg-zinc-800 text-xs px-2.5 py-1 rounded-full text-zinc-400">Direct ZIP Hub</span>
         </div>
         <div class="text-sm text-zinc-400">
-            <i class="fa-solid fa-shield-halved text-green-500 ml-1"></i> اتصال آمن وموثوق
+            <i class="fa-solid fa-shield-halved text-green-500 ml-1"></i> فحص مباشر وآمن
         </div>
     </header>
 
@@ -55,7 +56,7 @@
         <!-- Hero Section -->
         <div class="text-center max-w-2xl mb-8">
             <h1 class="text-4xl md:text-5xl font-black mb-4 leading-tight">احصل على حساب <span class="text-[#E50914]">Netflix مدفوع</span> فوراً!</h1>
-            <p class="text-zinc-400 text-lg">شاهد إعلاناً قصيراً لمدة 10 ثوانٍ لدعم الموقع، وسيتم فتح حساب حقيقي ومفعل مع كوكيز وأزرار دخول مباشرة.</p>
+            <p class="text-zinc-400 text-lg">شاهد إعلاناً قصيراً لمدة 10 ثوانٍ لدعم الموقع، وسيتم استخراج حساب حقيقي ومفعل مباشرة من أرشيف الحسابات.</p>
         </div>
 
         <!-- Initial Action Box (Watch Ad) -->
@@ -63,21 +64,20 @@
             <div class="w-20 h-20 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6 text-[#E50914] text-3xl">
                 <i class="fa-solid fa-play"></i>
             </div>
-            <h3 class="text-2xl font-bold mb-2">اضغط للمشاهدة والمكافأة</h3>
-            <p class="text-zinc-400 text-sm mb-6">يجب إكمال الإعلان بالكامل لفتح بيانات الحساب.</p>
-            <button onclick="startAdProcess()" class="w-full netflix-red text-white font-bold py-4 px-6 rounded-xl text-lg transition duration-300 pulse-btn flex items-center justify-center space-x-2 space-x-reverse">
-                <i class="fa-solid fa-tv ml-2"></i> شاهد الإعلان والفتح الآن
+            <h3 id="status-title" class="text-2xl font-bold mb-2">جاري تهيئة الحسابات...</h3>
+            <p id="status-desc" class="text-zinc-400 text-sm mb-6">يرجى الانتظار قليلاً ليتم تحميل ملف الـ ZIP وفحصه.</p>
+            <button id="main-reward-btn" disabled onclick="startAdProcess()" class="w-full bg-zinc-700 text-zinc-400 font-bold py-4 px-6 rounded-xl text-lg cursor-not-allowed transition duration-300 flex items-center justify-center space-x-2 space-x-reverse">
+                <i class="fa-solid fa-spinner fa-spin ml-2"></i> جاري تحميل الأرشيف...
             </button>
         </div>
 
-        <!-- Ad Playing Modal / Box (Hidden by default) -->
+        <!-- Ad Playing Modal / Box -->
         <div id="ad-player-box" class="hidden glass-card w-full max-w-xl p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-zinc-800">
                 <div id="ad-progress-bar" class="h-full bg-[#E50914] w-0 transition-all duration-1000"></div>
             </div>
             <span class="bg-[#E50914]/20 text-[#E50914] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">مساحة إعلانية</span>
             
-            <!-- مكان إدراج إعلانات شركات خارجية مستقبلاً مثل Adsterra -->
             <div id="ad-slot-content" class="my-8 py-12 border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center">
                 <i class="fa-solid fa-rectangle-ad text-5xl text-zinc-600 mb-4 animate-bounce"></i>
                 <p class="text-lg font-semibold text-zinc-300">جاري عرض الإعلان...</p>
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <!-- Account Result Box (Hidden by default) -->
+        <!-- Account Result Box -->
         <div id="account-result-box" class="hidden glass-card w-full max-w-2xl p-6 md:p-8 rounded-2xl shadow-2xl border border-zinc-800">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-4 mb-6">
                 <div class="flex items-center space-x-3 space-x-reverse">
@@ -94,14 +94,13 @@
                         <i class="fa-solid fa-check"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-white">مبروك! تم فتح الحساب بنجاح</h3>
-                        <p class="text-xs text-zinc-400">قم باختيار طريقة الدخول المناسبة لجهازك أدناه</p>
+                        <h3 class="text-xl font-bold text-white">مبروك! تم استخراج الحساب بنجاح</h3>
+                        <p class="text-xs text-zinc-400">اختر طريقة الدخول المناسبة لجهازك أدناه</p>
                     </div>
                 </div>
                 <span id="res-country" class="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-lg text-sm font-bold">--</span>
             </div>
 
-            <!-- Grid Details -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center">
                 <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800/60">
                     <span class="block text-xs text-zinc-500 mb-1">الخطة (Plan)</span>
@@ -109,7 +108,7 @@
                 </div>
                 <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800/60">
                     <span class="block text-xs text-zinc-500 mb-1">نوع الدفع</span>
-                    <span id="res-payment" class="font-bold text-sm text-zinc-200">--</span>
+                    <span id="res-payment" class="font-bold text-sm text-zinc-200">CC</span>
                 </div>
                 <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800/60">
                     <span class="block text-xs text-zinc-500 mb-1">عضو إضافي</span>
@@ -121,7 +120,7 @@
                 </div>
             </div>
 
-            <!-- Login Buttons (Phone, PC, TV) -->
+            <!-- Login Buttons -->
             <div class="space-y-3 mb-6">
                 <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">أزرار تسجيل الدخول المباشر:</label>
                 
@@ -158,7 +157,7 @@
                         </div>
                         <div class="text-right">
                             <strong class="block text-sm group-hover:text-[#E50914] transition">تسجيل دخول التلفاز (TV Login)</strong>
-                            <span class="text-xs text-zinc-500">ربط سريع بشاشات الذكية (Smart TV)</span>
+                            <span class="text-xs text-zinc-500">ربط سريع بالشاشات الذكية (Smart TV)</span>
                         </div>
                     </div>
                     <i class="fa-solid fa-arrow-left text-zinc-500 group-hover:text-white transition"></i>
@@ -178,7 +177,7 @@
 
             <!-- Get Another Account -->
             <button onclick="resetAndReload()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-xl transition text-sm">
-                <i class="fa-solid faيق-rotate-right ml-2"></i> مشاهدة إعلان آخر والحصول على حساب جديد
+                <i class="fa-solid fa-rotate-right ml-2"></i> مشاهدة إعلان آخر والحصول على حساب جديد
             </button>
         </div>
 
@@ -189,22 +188,155 @@
         &copy; 2026 Netflix Reward System. All rights reserved.
     </footer>
 
-    <!-- JavaScript Logic -->
+    <!-- JavaScript Smart Parsing & ZIP Reader -->
     <script>
         let accountsData = [];
 
-        // تحميل ملف data15.json عند تشغيل الصفحة
+        // دالة الفحص الذكي للـ Text داخيل كل ملف في الـ ZIP (نفس خوارزمية بايثون الذكية)
+        function parseCookieContent(content) {
+            let profile = "Unknown";
+            let country = "Unknown";
+            let plan = "Unknown";
+            let next_billing = "Not Available";
+            let extra_member = "No";
+            let payment = "CC";
+            
+            let netflixId = "";
+            let secureNetflixId = "";
+            let token = "";
+
+            // البحث عن الإيميل واستنتاج البروفايل
+            let emailMatch = content.match(/[\w\.-]+@[\w\.-]+\.\w+/);
+            if (emailMatch) {
+                profile = emailMatch[0].split('@')[0];
+            }
+
+            let lines = content.split('\n');
+            lines.forEach(line => {
+                let lower = line.toLowerCase();
+                if (lower.includes('profile:')) {
+                    let parts = line.split(':');
+                    if (parts[1] && parts[1].trim()) profile = parts[1].trim();
+                }
+                if (lower.includes('country:')) {
+                    let parts = line.split(':');
+                    if (parts[1] && parts[1].trim()) country = parts[1].trim().toUpperCase();
+                }
+                if (lower.includes('plan:')) {
+                    let parts = line.split(':');
+                    if (parts[1] && parts[1].trim()) plan = parts[1].trim();
+                }
+                if (lower.includes('billing:')) {
+                    let parts = line.split(':');
+                    if (parts[1] && parts[1].trim()) next_billing = parts[1].trim();
+                }
+                if (lower.includes('extra members:')) {
+                    if (lower.includes('true') || lower.includes('yes')) extra_member = "Yes";
+                }
+            });
+
+            // استخراج كوكيز NetflixId و SecureNetflixId ذسياً
+            let netIdMatch = content.match(/NetflixId\s+([^\s]+)/i);
+            if (netIdMatch) {
+                netflixId = netIdMatch[1];
+            } else {
+                let tokens = content.match(/(ct%3D[^\s]+|v%3D3%26[^\s]+)/g);
+                if (tokens) {
+                    for (let t of tokens) {
+                        if (t.includes('ct%3D')) { netflixId = t; break; }
+                    }
+                }
+                if (!netflixId) {
+                    for (let word of content.split(/\s+/)) {
+                        if (word.length > 150 && (word.includes('%3D') || word.includes('Bgi') || word.includes('Bq'))) {
+                            netflixId = word;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            let secIdMatch = content.match(/SecureNetflixId\s+([^\s]+)/i);
+            if (secIdMatch) {
+                secureNetflixId = secIdMatch[1];
+            } else {
+                for (let word of content.split(/\s+/)) {
+                    if (word.includes('mac%3D') || word.includes('v%3D3%26mac')) {
+                        secureNetflixId = word;
+                        break;
+                    }
+                }
+            }
+
+            // استخراج الـ Token للروابط
+            try {
+                let decoded = decodeURIComponent(netflixId);
+                if (decoded.includes('ct%3D')) {
+                    token = decoded.split('ct%3D')[1].split('%26')[0];
+                } else {
+                    token = netflixId;
+                }
+            } catch(e) {
+                token = netflixId;
+            }
+
+            if (!token) {
+                let tokenMatch = content.match(/nftoken=([A-Za-z0-9_%+-]+)/);
+                if (tokenMatch) token = tokenMatch[1];
+            }
+
+            return {
+                profile, country, plan, next_billing, extra_member, payment,
+                netflix_id: netflixId,
+                secure_netflix_id: secureNetflixId,
+                token: token
+            };
+        }
+
+        // تحميل ملف الـ ZIP مباشرة وفكه عند فتح الصفحة
         window.addEventListener('DOMContentLoaded', async () => {
             try {
-                let response = await fetch('data15.json');
-                if (!response.ok) throw new Error('فشل تحميل الملف');
-                accountsData = await response.json();
+                let response = await fetch('netflix_cookie.zip');
+                if (!response.ok) throw new Error('فشل تحميل ملف الـ ZIP');
+                
+                let blob = await response.blob();
+                let zip = new JSZip();
+                let zipContent = await zip.loadAsync(blob);
+                
+                for (let filename of Object.keys(zipContent.files)) {
+                    let file = zipContent.files[filename];
+                    if (file.dir || filename.includes('__MACOSX')) continue;
+                    
+                    let text = await file.async('text');
+                    let parsedAcc = parseCookieContent(text);
+                    
+                    // إذا وجدنا الكوكي الأساسية، نضيفه للقائمة المتاحة للمستخدمين
+                    if (parsedAcc.netflix_id) {
+                        accountsData.push(parsedAcc);
+                    }
+                }
+
+                if (accountsData.length > 0) {
+                    document.getElementById('status-title').textContent = "جاهز للتوزيع!";
+                    document.getElementById('status-desc').textContent = `تم تحميل وفحص ${accountsData.length} حساب بنجاح من الـ ZIP.`;
+                    let btn = document.getElementById('main-reward-btn');
+                    btn.disabled = false;
+                    btn.classList.remove('bg-zinc-700', 'text-zinc-400', 'cursor-not-allowed');
+                    btn.classList.add('netflix-red', 'text-white');
+                    btn.innerHTML = '<i class="fa-solid fa-tv ml-2"></i> شاهد الإعلان والفتح الآن';
+                } else {
+                    document.getElementById('status-title').textContent = "تنبيه";
+                    document.getElementById('status-desc').textContent = "لم يتم العثور على حسابات صالحة داخل ملف الـ ZIP.";
+                }
+
             } catch (error) {
-                console.error("خطأ في جلب بيانات الـ JSON:", error);
+                console.error("خطأ:", error);
+                document.getElementById('status-title').textContent = "خطأ في التحميل";
+                document.getElementById('status-desc').textContent = "تأكد من رفع ملف netflix_cookie.zip بجانب ملف index.html في GitHub.";
             }
         });
 
-        // بدء عملية الإعلان
+        // بدء الإعلان
         function startAdProcess() {
             document.getElementById('ad-trigger-box').classList.add('hidden');
             document.getElementById('ad-player-box').classList.remove('hidden');
@@ -228,40 +360,31 @@
             }, 1000);
         }
 
-        // عند انتهاء الإعلان بنجاح
+        // اختيار حساب عشوائي وعرضه بعد انتهاء الإعلان
         function finishAdReward() {
             document.getElementById('ad-player-box').classList.add('hidden');
             
-            if (!accountsData || accountsData.length === 0) {
-                alert('عذراً، لا توجد حسابات متاحة حالياً في ملف data15.json أو فشل الاتصال به!');
-                resetAndReload();
-                return;
-            }
-
-            // اختيار حساب عشوائي من ملف data15.json
-            let randomAccount = accountsData[Math.floor(Math.random() * accountsData.length)];
+            let randomAcc = accountsData[Math.floor(Math.random() * accountsData.length)];
             
-            // تعبئة البيانات في الواجهة
-            document.getElementById('res-country').textContent = randomAccount.country || 'ZM';
-            document.getElementById('res-plan').textContent = randomAccount.plan || 'Standard';
-            document.getElementById('res-payment').textContent = randomAccount.payment || 'CC';
-            document.getElementById('res-extra').textContent = randomAccount.extra_member || 'No';
-            document.getElementById('res-profile').textContent = randomAccount.profile || 'Netflix User';
+            document.getElementById('res-country').textContent = randomAcc.country || 'ZM';
+            document.getElementById('res-plan').textContent = randomAcc.plan || 'Standard';
+            document.getElementById('res-payment').textContent = randomAcc.payment || 'CC';
+            document.getElementById('res-extra').textContent = randomAcc.extra_member || 'No';
+            document.getElementById('res-profile').textContent = randomAcc.profile || 'Netflix User';
 
-            // تعبئة الروابط
-            document.getElementById('btn-phone').href = randomAccount.phone_login || '#';
-            document.getElementById('btn-pc').href = randomAccount.pc_login || '#';
-            document.getElementById('btn-tv').href = randomAccount.tv_login || '#';
+            // بناء روابط الدخول السريع
+            let token = randomAcc.token || '';
+            document.getElementById('btn-phone').href = `https://netflix.com/unsupported?nftoken=${token}`;
+            document.getElementById('btn-pc').href = `https://netflix.com/login?nftoken=${token}`;
+            document.getElementById('btn-tv').href = `https://netflix.com/tv8?nftoken=${token}`;
 
-            // تعبئة نص الكوكيز
-            let cookieText = `.netflix.com\tTRUE\t/\tTRUE\t1814123745\tNetflixId\t${randomAccount.netflix_id || ''}\n.netflix.com\tTRUE\t/\tTRUE\t1814123745\tSecureNetflixId\t${randomAccount.secure_netflix_id || ''}`;
+            // كتابة الكوكيز
+            let cookieText = `.netflix.com\tTRUE\t/\tTRUE\t1814123745\tNetflixId\t${randomAcc.netflix_id}\n.netflix.com\tTRUE\t/\tTRUE\t1814123745\tSecureNetflixId\t${randomAcc.secure_netflix_id}`;
             document.getElementById('cookie-textarea').value = cookieText;
 
-            // إظهار صندوق النتيجة
             document.getElementById('account-result-box').classList.remove('hidden');
         }
 
-        // نسخ الكوكيز
         function copyCookies() {
             let textArea = document.getElementById('cookie-textarea');
             textArea.select();
@@ -269,7 +392,6 @@
             alert('تم نسخ الكوكيز بنجاح!');
         }
 
-        // إعادة الضبط
         function resetAndReload() {
             document.getElementById('account-result-box').classList.add('hidden');
             document.getElementById('ad-trigger-box').classList.remove('hidden');
