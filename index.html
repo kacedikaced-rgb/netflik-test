@@ -197,9 +197,8 @@
         &copy; 2026 Netflix Reward System. <span data-i18n="footer_rights">All rights reserved.</span>
     </footer>
 
-    <!-- JavaScript Localization & ZIP Engine -->
+    <!-- JavaScript Smart Parsing & Localization -->
     <script>
-        // قواميس اللغات (عربي، إنجليزي، فرنسي)
         const translations = {
             ar: {
                 page_title: "Netflix Reward Portal - احصل على حسابك المجاني",
@@ -272,7 +271,7 @@
                 hero_title_3: "instantanément !",
                 hero_desc: "Regardez une courte publicité pour soutenir le site, et un compte réel sera extrait directement de l'archive.",
                 loading_title: "Initialisation des comptes...",
-                loading_desc: "Veuillezpatienter pendant le téléchargement et l'analyse du fichier ZIP.",
+                loading_desc: "Veuillez patienter pendant le téléchargement et l'analyse du fichier ZIP.",
                 loading_btn: "Chargement de l'archive...",
                 watch_ad_btn: "Regarder la pub & Débloquer",
                 ad_label: "PUBLICITÉ",
@@ -301,7 +300,6 @@
 
         let currentLang = 'ar';
 
-        // دالة تغيير لغة الموقع وتحديث النصوص والاتجاه (RTL / LTR)
         function changeLanguage(lang) {
             if (!translations[lang]) return;
             currentLang = lang;
@@ -319,7 +317,6 @@
                 root.setAttribute('lang', lang);
             }
 
-            // تحديث كافة العناصر التي تحمل الوسم data-i18n
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 let key = el.getAttribute('data-i18n');
                 if (translations[lang][key]) {
@@ -330,30 +327,27 @@
             document.getElementById('page-title').textContent = translations[lang]['page_title'];
         }
 
-        // الكشف التلقائي عن لغة الهاتف أو المتصفح عند أول دخول
         function detectUserLanguage() {
             let savedLang = localStorage.getItem('preferred_lang');
             if (savedLang && translations[savedLang]) {
                 changeLanguage(savedLang);
                 return;
             }
-
             let browserLang = navigator.language || navigator.userLanguage || 'en';
             let shortLang = browserLang.substring(0, 2).toLowerCase();
-
             if (translations[shortLang]) {
                 changeLanguage(shortLang);
             } else {
-                changeLanguage('en'); // اللغة الافتراضية إذا لم تكن مدعومة
+                changeLanguage('en');
             }
         }
 
-        // خوارزمية استخراج الكوكيز والبيانات بدقة عالية
+        // خوارزمية محسنة 100% لقراءة ملفاتك المُنسقة مسبقاً داخل الـ ZIP
         function parseCookieContent(content) {
-            let profile = "Netflix User";
+            let profile = "User";
             let country = "US";
-            let plan = "Standard";
-            let next_billing = "Active";
+            let plan = "Unknown";
+            let next_billing = "Not Available";
             let extra_member = "No";
             let payment = "CC";
             
@@ -364,7 +358,27 @@
             let lines = content.split('\n');
             for (let line of lines) {
                 let trimmed = line.trim();
-                if (trimmed.includes('NetflixId')) {
+                let lower = trimmed.toLowerCase();
+
+                if (lower.startsWith('country:')) {
+                    let p = trimmed.split(':');
+                    if (p[1] && p[1].trim()) country = p[1].trim().toUpperCase();
+                }
+                if (lower.startsWith('plan:')) {
+                    let p = trimmed.split(':');
+                    if (p[1] && p[1].trim()) plan = p[1].trim();
+                }
+                // التقاط التوكن مباشرة من سطر NFToken الموجود في ملفاتك
+                if (lower.startsWith('nftoken:')) {
+                    let p = trimmed.split(':');
+                    if (p[1] && p[1].trim()) token = p[1].trim();
+                }
+                if (lower.includes('profiles') || lower.includes('profile:')) {
+                    let p = trimmed.split(':');
+                    if (p[1] && p[1].trim()) profile = p[1].trim().replace(/[\(\)]/g, '');
+                }
+
+                if (trimmed.includes('NetflixId') && !trimmed.includes('SecureNetflixId')) {
                     let parts = trimmed.split(/\s+/);
                     if (parts.length >= 7) netflixId = parts[6];
                 }
@@ -372,37 +386,28 @@
                     let parts = trimmed.split(/\s+/);
                     if (parts.length >= 7) secureNetflixId = parts[6];
                 }
-                let lower = trimmed.toLowerCase();
-                if (lower.includes('email:')) {
-                    let p = trimmed.split(':');
-                    if (p[1] && p[1].trim()) profile = p[1].trim().split('@')[0];
-                }
-                if (lower.includes('country:')) {
-                    let p = trimmed.split(':');
-                    if (p[1] && p[1].trim()) country = p[1].trim().toUpperCase();
-                }
             }
 
-            if (!netflixId) {
-                let match = content.match(/NetflixId\s+([^\s]+)/i);
-                if (match) netflixId = match[1];
-            }
-            if (!secureNetflixId) {
-                let match = content.match(/SecureNetflixId\s+([^\s]+)/i);
-                if (match) secureNetflixId = match[1];
+            // فحص بديل للـ Token إذا لم يوجد في سطر NFToken
+            if (!token) {
+                let tokenMatch = content.match(/nftoken=([A-Za-z0-9_%+-]+)/);
+                if (tokenMatch) token = tokenMatch[1];
             }
 
-            try {
-                let decoded = decodeURIComponent(netflixId);
-                if (decoded.includes('ct=')) {
-                    token = decoded.split('ct=')[1].split('&')[0];
-                } else if (decoded.includes('ct%3D')) {
-                    token = decoded.split('ct%3D')[1].split('%26')[0];
-                } else {
+            // إذا كان لدينا NetflixId ولم نستخرج الـ Token، نقوم باستخلاصه منها
+            if (!token && netflixId) {
+                try {
+                    let decoded = decodeURIComponent(netflixId);
+                    if (decoded.includes('ct=')) {
+                        token = decoded.split('ct=')[1].split('&')[0];
+                    } else if (decoded.includes('ct%3D')) {
+                        token = decoded.split('ct%3D')[1].split('%26')[0];
+                    } else {
+                        token = netflixId;
+                    }
+                } catch (e) {
                     token = netflixId;
                 }
-            } catch (e) {
-                token = netflixId;
             }
 
             if (token) {
@@ -411,17 +416,16 @@
 
             return {
                 profile, country, plan, next_billing, extra_member, payment,
-                netflix_id: netflixId,
-                secure_netflix_id: secureNetflixId,
+                netflix_id: netflixId || token,
+                secure_netflix_id: secureNetflixId || "v%3D3%26mac%3Ddummy",
                 token: token
             };
         }
 
         let accountsData = [];
 
-        // جلب ملف الـ ZIP وفكه عند الفتح
         window.addEventListener('DOMContentLoaded', async () => {
-            detectUserLanguage(); // تفعيل كشف اللغة التلقائي
+            detectUserLanguage();
 
             try {
                 let response = await fetch('netflix_cookie.zip');
@@ -438,7 +442,7 @@
                     let text = await file.async('text');
                     let parsedAcc = parseCookieContent(text);
                     
-                    if (parsedAcc.netflix_id) {
+                    if (parsedAcc.token || parsedAcc.netflix_id) {
                         accountsData.push(parsedAcc);
                     }
                 }
@@ -449,7 +453,6 @@
                     btn.classList.remove('bg-zinc-700', 'text-zinc-400', 'cursor-not-allowed');
                     btn.classList.add('netflix-red', 'text-white', 'pulse-btn');
                     
-                    // تحديث نص الزر حسب اللغة الحالية
                     btn.innerHTML = `<i class="fa-solid fa-tv ml-2"></i> <span>${translations[currentLang]['watch_ad_btn']}</span>`;
                     document.getElementById('status-title').textContent = currentLang === 'ar' ? "الحسابات جاهزة!" : (currentLang === 'fr' ? "Comptes prêts !" : "Accounts Ready!");
                     document.getElementById('status-desc').textContent = `${accountsData.length} accounts loaded successfully.`;
@@ -465,7 +468,6 @@
             }
         });
 
-        // تشغيل الإعلان والعد التنازلي
         function startAdProcess() {
             document.getElementById('ad-trigger-box').classList.add('hidden');
             document.getElementById('ad-player-box').classList.remove('hidden');
@@ -489,7 +491,6 @@
             }, 1000);
         }
 
-        // جلب حساب عشوائي بعد الإعلان
         function finishAdReward() {
             document.getElementById('ad-player-box').classList.add('hidden');
             
@@ -502,6 +503,7 @@
             document.getElementById('res-profile').textContent = randomAcc.profile || 'User';
 
             let token = randomAcc.token || '';
+            // تفعيل روابط الدخول السريع للهاتف، الحاسوب، والتلفاز بالتوكن المستخرج بدقة
             document.getElementById('btn-phone').href = `https://www.netflix.com/unsupported?nftoken=${token}`;
             document.getElementById('btn-pc').href = `https://www.netflix.com/login?nftoken=${token}`;
             document.getElementById('btn-tv').href = `https://www.netflix.com/tv8?nftoken=${token}`;
