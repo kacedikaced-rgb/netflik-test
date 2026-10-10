@@ -94,7 +94,7 @@
             </button>
         </div>
 
-        <!-- Native Banner Ad (Placed nicely under the action boxes) -->
+        <!-- Native Banner Ad -->
         <div class="my-4 flex justify-center w-full max-w-md overflow-hidden rounded-lg">
             <script async="async" data-cfasync="false" src="https://pl31765878.profitableratecpmnetwork.com/027c19b7cd3dfbd3e0f98814a136831c/invoke.js"></script>
             <div id="container-027c19b7cd3dfbd3e0f98814a136831c"></div>
@@ -109,7 +109,7 @@
             
             <div class="my-4 py-4 border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center">
                 <p class="text-base font-semibold text-zinc-300 mb-2" data-i18n="ad_watching">جاري عرض الإعلان...</p>
-                <p id="countdown-timer" class="text-3xl font-black text-[#E50914]">10</p>
+                <p id="countdown-timer" class="text-4xl font-black text-[#E50914]">20</p>
                 <p class="text-xs text-zinc-500 mt-1" data-i18n="ad_wait">يرجى الانتظار وعدم إغلاق الصفحة</p>
                 
                 <!-- إعلان Banner 300x250 يظهر أثناء انتظار العد التنازلي -->
@@ -218,7 +218,7 @@
             </div>
         </div>
 
-        <!-- Banner 320x50 (Placed nicely at the bottom of main container) -->
+        <!-- Banner 320x50 -->
         <div class="my-4 flex justify-center overflow-hidden rounded-lg">
             <script>
               atOptions = {
@@ -576,18 +576,21 @@
         function runAdPlayer() {
             document.getElementById('ad-trigger-box').classList.add('hidden');
             document.getElementById('cooldown-box').classList.add('hidden');
+            document.getElementById('account-result-box').classList.add('hidden');
             document.getElementById('ad-player-box').classList.remove('hidden');
 
-            let timeLeft = 10;
+            let timeLeft = 20; // 20 ثانية
             let timerElement = document.getElementById('countdown-timer');
             let progressBar = document.getElementById('ad-progress-bar');
             
+            // تعيين القيمة فوراً لكي تظهر بدون تأخير
+            timerElement.textContent = timeLeft;
             progressBar.style.width = '0%';
 
             let timerInterval = setInterval(() => {
                 timeLeft--;
                 timerElement.textContent = timeLeft;
-                let progressPercent = ((10 - timeLeft) / 10) * 100;
+                let progressPercent = ((20 - timeLeft) / 20) * 100;
                 progressBar.style.width = progressPercent + '%';
 
                 if (timeLeft <= 0) {
