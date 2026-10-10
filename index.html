@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- JSZip للتعامل مع ملف الـ ZIP -->
+    <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -78,6 +78,16 @@
             <button id="main-reward-btn" disabled onclick="startAdProcess()" class="w-full bg-zinc-700 text-zinc-400 font-bold py-3.5 px-6 rounded-xl text-base md:text-lg cursor-not-allowed transition duration-300 flex items-center justify-center space-x-2 space-x-reverse">
                 <i class="fa-solid fa-spinner fa-spin ml-2"></i> <span data-i18n="loading_btn">جاري تحميل الأرشيف...</span>
             </button>
+        </div>
+
+        <!-- Cooldown Box (Appears if user tries within 40 minutes) -->
+        <div id="cooldown-box" class="hidden glass-card w-full max-w-md p-6 md:p-8 rounded-2xl text-center shadow-2xl border border-yellow-500/30">
+            <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-yellow-500 text-2xl">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2" data-i18n="cooldown_title">لقد حصلت على حسابك بالفعل!</h3>
+            <p class="text-zinc-400 text-xs mb-4" data-i18n="cooldown_desc">يمكنك طلب حساب جديد بعد انقضاء الوقت التالي:</p>
+            <div id="cooldown-timer-display" class="text-3xl md:text-4xl font-black text-yellow-500 tracking-wider">40:00</div>
         </div>
 
         <!-- Ad Playing Modal / Box -->
@@ -183,11 +193,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Get Another Account -->
-            <button onclick="resetAndReload()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center space-x-2 space-x-reverse">
-                <i class="fa-solid fa-rotate-right ml-1"></i> <span data-i18n="another_btn">مشاهدة إعلان آخر وحساب جديد</span>
-            </button>
         </div>
 
     </main>
@@ -197,7 +202,7 @@
         &copy; 2026 Netflix Reward System. <span data-i18n="footer_rights">All rights reserved.</span>
     </footer>
 
-    <!-- JavaScript Smart Parsing & Localization -->
+    <!-- JavaScript Engine -->
     <script>
         const translations = {
             ar: {
@@ -207,8 +212,8 @@
                 hero_title_3: "فوراً!",
                 hero_desc: "شاهد إعلاناً قصيراً لدعم الموقع، وسيتم استخراج حساب حقيقي ومفعل مباشرة من الأرشيف.",
                 loading_title: "جاري تهيئة الحسابات...",
-                loading_desc: "يرجى الانتظار قليلاً ليتم تحميل ملف الـ ZIP وفحصه.",
-                loading_btn: "جاري تحميل الأرشيف...",
+                loading_desc: "يرجى الانتظار قليلاً...",
+                loading_btn: "جاري التحميل...",
                 watch_ad_btn: "شاهد الإعلان والفتح الآن",
                 ad_label: "مساحة إعلانية",
                 ad_watching: "جاري عرض الإعلان...",
@@ -229,7 +234,8 @@
                 copy_label: "نسخ الكوكيز (Netscape Format):",
                 copy_btn: "نسخ الكوكيز",
                 copy_success: "تم نسخ الكوكيز بنجاح!",
-                another_btn: "مشاهدة إعلان آخر وحساب جديد",
+                cooldown_title: "لقد حصلت على حسابك بالفعل!",
+                cooldown_desc: "يمكنك طلب حساب جديد بعد انقضاء الوقت التالي:",
                 footer_rights: "جميع الحقوق محفوظة."
             },
             en: {
@@ -239,8 +245,8 @@
                 hero_title_3: "Account Instantly!",
                 hero_desc: "Watch a short ad to support the site, and a real activated account will be extracted directly from the archive.",
                 loading_title: "Initializing Accounts...",
-                loading_desc: "Please wait while the ZIP file is being downloaded and scanned.",
-                loading_btn: "Loading Archive...",
+                loading_desc: "Please wait a moment...",
+                loading_btn: "Loading...",
                 watch_ad_btn: "Watch Ad & Unlock Now",
                 ad_label: "ADVERTISEMENT",
                 ad_watching: "Showing advertisement...",
@@ -261,7 +267,8 @@
                 copy_label: "Copy Cookies (Netscape Format):",
                 copy_btn: "Copy Cookies",
                 copy_success: "Cookies copied successfully!",
-                another_btn: "Watch another ad & get new account",
+                cooldown_title: "You already claimed an account!",
+                cooldown_desc: "You can request a new account after:",
                 footer_rights: "All rights reserved."
             },
             fr: {
@@ -270,9 +277,9 @@
                 hero_title_2: "Netflix payant",
                 hero_title_3: "instantanément !",
                 hero_desc: "Regardez une courte publicité pour soutenir le site, et un compte réel sera extrait directement de l'archive.",
-                loading_title: "Initialisation des comptes...",
-                loading_desc: "Veuillez patienter pendant le téléchargement et l'analyse du fichier ZIP.",
-                loading_btn: "Chargement de l'archive...",
+                loading_title: "Initialisation...",
+                loading_desc: "Veuillez patienter un instant...",
+                loading_btn: "Chargement...",
                 watch_ad_btn: "Regarder la pub & Débloquer",
                 ad_label: "PUBLICITÉ",
                 ad_watching: "Affichage de la publicité...",
@@ -293,7 +300,8 @@
                 copy_label: "Copier les cookies (Format Netscape) :",
                 copy_btn: "Copier",
                 copy_success: "Cookies copiés avec succès !",
-                another_btn: "Regarder une autre pub & nouveau compte",
+                cooldown_title: "Vous avez déjà réclamé un compte !",
+                cooldown_desc: "Vous pouvez demander un nouveau compte après :",
                 footer_rights: "Tous droits réservés."
             }
         };
@@ -342,7 +350,46 @@
             }
         }
 
-        // خوارزمية محسنة 100% لقراءة ملفاتك المُنسقة مسبقاً داخل الـ ZIP
+        // نظام التحقق من وقت الانتظار (40 دقيقة)
+        const COOLDOWN_DURATION = 40 * 60 * 1000; // 40 دقيقة بالمللي ثانية
+
+        function checkCooldownOnLoad() {
+            let nextAllowedTime = localStorage.getItem('netflix_next_allowed');
+            if (nextAllowedTime) {
+                let remainingTime = parseInt(nextAllowedTime) - Date.now();
+                if (remainingTime > 0) {
+                    lockUIWithCooldown(remainingTime);
+                    return true;
+                } else {
+                    localStorage.removeItem('netflix_next_allowed');
+                }
+            }
+            return false;
+        }
+
+        function lockUIWithCooldown(remainingTime) {
+            document.getElementById('ad-trigger-box').classList.add('hidden');
+            document.getElementById('cooldown-box').classList.remove('hidden');
+
+            let timerDisplay = document.getElementById('cooldown-timer-display');
+
+            let cdInterval = setInterval(() => {
+                let now = Date.now();
+                let timeLeft = parseInt(localStorage.getItem('netflix_next_allowed')) - now;
+
+                if (timeLeft <= 0) {
+                    clearInterval(cdInterval);
+                    localStorage.removeItem('netflix_next_allowed');
+                    document.getElementById('cooldown-box').classList.add('hidden');
+                    document.getElementById('ad-trigger-box').classList.remove('hidden');
+                } else {
+                    let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
         function parseCookieContent(content) {
             let profile = "User";
             let country = "US";
@@ -350,7 +397,6 @@
             let next_billing = "Not Available";
             let extra_member = "No";
             let payment = "CC";
-            
             let netflixId = "";
             let secureNetflixId = "";
             let token = "";
@@ -368,7 +414,6 @@
                     let p = trimmed.split(':');
                     if (p[1] && p[1].trim()) plan = p[1].trim();
                 }
-                // التقاط التوكن مباشرة من سطر NFToken الموجود في ملفاتك
                 if (lower.startsWith('nftoken:')) {
                     let p = trimmed.split(':');
                     if (p[1] && p[1].trim()) token = p[1].trim();
@@ -377,7 +422,6 @@
                     let p = trimmed.split(':');
                     if (p[1] && p[1].trim()) profile = p[1].trim().replace(/[\(\)]/g, '');
                 }
-
                 if (trimmed.includes('NetflixId') && !trimmed.includes('SecureNetflixId')) {
                     let parts = trimmed.split(/\s+/);
                     if (parts.length >= 7) netflixId = parts[6];
@@ -388,13 +432,11 @@
                 }
             }
 
-            // فحص بديل للـ Token إذا لم يوجد في سطر NFToken
             if (!token) {
                 let tokenMatch = content.match(/nftoken=([A-Za-z0-9_%+-]+)/);
                 if (tokenMatch) token = tokenMatch[1];
             }
 
-            // إذا كان لدينا NetflixId ولم نستخرج الـ Token، نقوم باستخلاصه منها
             if (!token && netflixId) {
                 try {
                     let decoded = decodeURIComponent(netflixId);
@@ -426,6 +468,9 @@
 
         window.addEventListener('DOMContentLoaded', async () => {
             detectUserLanguage();
+            
+            // التحقق من وجود حظر مؤقت نشط (40 دقيقة)
+            let isCooldownActive = checkCooldownOnLoad();
 
             try {
                 let response = await fetch('netflix_cookie.zip');
@@ -454,11 +499,11 @@
                     btn.classList.add('netflix-red', 'text-white', 'pulse-btn');
                     
                     btn.innerHTML = `<i class="fa-solid fa-tv ml-2"></i> <span>${translations[currentLang]['watch_ad_btn']}</span>`;
-                    document.getElementById('status-title').textContent = currentLang === 'ar' ? "الحسابات جاهزة!" : (currentLang === 'fr' ? "Comptes prêts !" : "Accounts Ready!");
-                    document.getElementById('status-desc').textContent = `${accountsData.length} accounts loaded successfully.`;
+                    document.getElementById('status-title').textContent = currentLang === 'ar' ? "جاهز للاستخدام" : (currentLang === 'fr' ? "Prêt" : "Ready");
+                    document.getElementById('status-desc').textContent = currentLang === 'ar' ? "اضغط أدناه لمشاهدة الإعلان والحصول على حسابك." : "Click below to watch the ad and get your account.";
                 } else {
                     document.getElementById('status-title').textContent = "Empty Archive";
-                    document.getElementById('status-desc').textContent = "No valid accounts found in ZIP.";
+                    document.getElementById('status-desc').textContent = "No valid accounts found.";
                 }
 
             } catch (error) {
@@ -494,6 +539,10 @@
         function finishAdReward() {
             document.getElementById('ad-player-box').classList.add('hidden');
             
+            // تفعيل حظر الـ 40 دقيقة وحفظه في الذاكرة المحلية للمتصفح
+            let unlockTime = Date.now() + COOLDOWN_DURATION;
+            localStorage.setItem('netflix_next_allowed', unlockTime);
+
             let randomAcc = accountsData[Math.floor(Math.random() * accountsData.length)];
             
             document.getElementById('res-country').textContent = randomAcc.country || 'US';
@@ -503,7 +552,6 @@
             document.getElementById('res-profile').textContent = randomAcc.profile || 'User';
 
             let token = randomAcc.token || '';
-            // تفعيل روابط الدخول السريع للهاتف، الحاسوب، والتلفاز بالتوكن المستخرج بدقة
             document.getElementById('btn-phone').href = `https://www.netflix.com/unsupported?nftoken=${token}`;
             document.getElementById('btn-pc').href = `https://www.netflix.com/login?nftoken=${token}`;
             document.getElementById('btn-tv').href = `https://www.netflix.com/tv8?nftoken=${token}`;
@@ -519,11 +567,6 @@
             textArea.select();
             document.execCommand('copy');
             alert(translations[currentLang]['copy_success']);
-        }
-
-        function resetAndReload() {
-            document.getElementById('account-result-box').classList.add('hidden');
-            document.getElementById('ad-trigger-box').classList.remove('hidden');
         }
     </script>
 </body>
