@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix Reward Portal - احصل على حسابك المجاني</title>
+    <title id="page-title">Netflix Reward Portal - احصل على حسابك المجاني</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- JSZip للتعامل مع ملفات الـ ZIP داخل المتصفح -->
+    <!-- JSZip للتعامل مع ملف الـ ZIP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -40,13 +40,20 @@
 <body class="min-h-screen flex flex-col justify-between">
 
     <!-- Header -->
-    <header class="w-full py-5 px-8 flex justify-between items-center border-b border-zinc-800">
+    <header class="w-full py-4 px-6 md:px-8 flex justify-between items-center border-b border-zinc-800">
         <div class="flex items-center space-x-3 space-x-reverse">
-            <span class="text-3xl font-black text-[#E50914] tracking-wider">NETFLIX</span>
-            <span class="bg-zinc-800 text-xs px-2.5 py-1 rounded-full text-zinc-400">Direct ZIP Hub</span>
+            <span class="text-2xl md:text-3xl font-black text-[#E50914] tracking-wider">NETFLIX</span>
+            <span class="bg-zinc-800 text-xs px-2.5 py-1 rounded-full text-zinc-400 hidden sm:inline-block">VIP Hub</span>
         </div>
-        <div class="text-sm text-zinc-400">
-            <i class="fa-solid fa-shield-halved text-green-500 ml-1"></i> فحص مباشر وآمن
+        
+        <!-- Language Switcher -->
+        <div class="flex items-center space-x-2 space-x-reverse">
+            <i class="fa-solid fa-globe text-zinc-400"></i>
+            <select id="lang-selector" onchange="changeLanguage(this.value)" class="bg-zinc-900 border border-zinc-700 text-white text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-[#E50914] transition cursor-pointer">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
         </div>
     </header>
 
@@ -55,34 +62,36 @@
         
         <!-- Hero Section -->
         <div class="text-center max-w-2xl mb-8">
-            <h1 class="text-4xl md:text-5xl font-black mb-4 leading-tight">احصل على حساب <span class="text-[#E50914]">Netflix مدفوع</span> فوراً!</h1>
-            <p class="text-zinc-400 text-lg">شاهد إعلاناً قصيراً لمدة 10 ثوانٍ لدعم الموقع، وسيتم استخراج حساب حقيقي ومفعل مباشرة من أرشيف الحسابات.</p>
+            <h1 class="text-3xl md:text-5xl font-black mb-4 leading-tight">
+                <span data-i18n="hero_title_1">احصل على حساب</span> <span class="text-[#E50914]" data-i18n="hero_title_2">Netflix مدفوع</span> <span data-i18n="hero_title_3">فوراً!</span>
+            </h1>
+            <p class="text-zinc-400 text-sm md:text-base" data-i18n="hero_desc">شاهد إعلاناً قصيراً لدعم الموقع، وسيتم استخراج حساب حقيقي ومفعل مباشرة من الأرشيف.</p>
         </div>
 
         <!-- Initial Action Box (Watch Ad) -->
-        <div id="ad-trigger-box" class="glass-card w-full max-w-md p-8 rounded-2xl text-center shadow-2xl">
-            <div class="w-20 h-20 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6 text-[#E50914] text-3xl">
+        <div id="ad-trigger-box" class="glass-card w-full max-w-md p-6 md:p-8 rounded-2xl text-center shadow-2xl">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6 text-[#E50914] text-2xl md:text-3xl">
                 <i class="fa-solid fa-play"></i>
             </div>
-            <h3 id="status-title" class="text-2xl font-bold mb-2">جاري تهيئة الحسابات...</h3>
-            <p id="status-desc" class="text-zinc-400 text-sm mb-6">يرجى الانتظار قليلاً ليتم تحميل ملف الـ ZIP وفحصه.</p>
-            <button id="main-reward-btn" disabled onclick="startAdProcess()" class="w-full bg-zinc-700 text-zinc-400 font-bold py-4 px-6 rounded-xl text-lg cursor-not-allowed transition duration-300 flex items-center justify-center space-x-2 space-x-reverse">
-                <i class="fa-solid fa-spinner fa-spin ml-2"></i> جاري تحميل الأرشيف...
+            <h3 id="status-title" class="text-xl md:text-2xl font-bold mb-2" data-i18n="loading_title">جاري تهيئة الحسابات...</h3>
+            <p id="status-desc" class="text-zinc-400 text-xs md:text-sm mb-6" data-i18n="loading_desc">يرجى الانتظار قليلاً ليتم تحميل ملف الـ ZIP وفحصه.</p>
+            <button id="main-reward-btn" disabled onclick="startAdProcess()" class="w-full bg-zinc-700 text-zinc-400 font-bold py-3.5 px-6 rounded-xl text-base md:text-lg cursor-not-allowed transition duration-300 flex items-center justify-center space-x-2 space-x-reverse">
+                <i class="fa-solid fa-spinner fa-spin ml-2"></i> <span data-i18n="loading_btn">جاري تحميل الأرشيف...</span>
             </button>
         </div>
 
         <!-- Ad Playing Modal / Box -->
-        <div id="ad-player-box" class="hidden glass-card w-full max-w-xl p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
+        <div id="ad-player-box" class="hidden glass-card w-full max-w-xl p-6 md:p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-zinc-800">
                 <div id="ad-progress-bar" class="h-full bg-[#E50914] w-0 transition-all duration-1000"></div>
             </div>
-            <span class="bg-[#E50914]/20 text-[#E50914] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">مساحة إعلانية</span>
+            <span class="bg-[#E50914]/20 text-[#E50914] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider" data-i18n="ad_label">مساحة إعلانية</span>
             
-            <div id="ad-slot-content" class="my-8 py-12 border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center">
-                <i class="fa-solid fa-rectangle-ad text-5xl text-zinc-600 mb-4 animate-bounce"></i>
-                <p class="text-lg font-semibold text-zinc-300">جاري عرض الإعلان...</p>
-                <p id="countdown-timer" class="text-4xl font-black text-[#E50914] mt-3">10</p>
-                <p class="text-xs text-zinc-500 mt-2">يرجى الانتظار وعدم إغلاق الصفحة حتى ينتهي العد التنازلي</p>
+            <div class="my-8 py-10 border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-rectangle-ad text-4xl md:text-5xl text-zinc-600 mb-4 animate-bounce"></i>
+                <p class="text-base md:text-lg font-semibold text-zinc-300" data-i18n="ad_watching">جاري عرض الإعلان...</p>
+                <p id="countdown-timer" class="text-3xl md:text-4xl font-black text-[#E50914] mt-3">10</p>
+                <p class="text-xs text-zinc-500 mt-2" data-i18n="ad_wait">يرجى الانتظار وعدم إغلاق الصفحة حتى ينتهي العد التنازلي</p>
             </div>
         </div>
 
@@ -90,94 +99,94 @@
         <div id="account-result-box" class="hidden glass-card w-full max-w-2xl p-6 md:p-8 rounded-2xl shadow-2xl border border-zinc-800">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-4 mb-6">
                 <div class="flex items-center space-x-3 space-x-reverse">
-                    <div class="w-12 h-12 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center text-xl">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center text-lg md:text-xl">
                         <i class="fa-solid fa-check"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-white">مبروك! تم استخراج الحساب بنجاح</h3>
-                        <p class="text-xs text-zinc-400">اختر طريقة الدخول المناسبة لجهازك أدناه</p>
+                        <h3 class="text-lg md:text-xl font-bold text-white" data-i18n="success_title">مبروك! تم استخراج الحساب بنجاح</h3>
+                        <p class="text-xs text-zinc-400" data-i18n="success_desc">اختر طريقة الدخول المناسبة لجهازك أدناه</p>
                     </div>
                 </div>
                 <span id="res-country" class="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-lg text-sm font-bold">--</span>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 text-center">
                 <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800/60">
-                    <span class="block text-xs text-zinc-500 mb-1">الخطة (Plan)</span>
+                    <span class="block text-xs text-zinc-500 mb-1" data-i18n="plan_lbl">الخطة</span>
                     <span id="res-plan" class="font-bold text-sm text-zinc-200">--</span>
                 </div>
                 <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800/60">
-                    <span class="block text-xs text-zinc-500 mb-1">نوع الدفع</span>
+                    <span class="block text-xs text-zinc-500 mb-1" data-i18n="payment_lbl">نوع الدفع</span>
                     <span id="res-payment" class="font-bold text-sm text-zinc-200">CC</span>
                 </div>
                 <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800/60">
-                    <span class="block text-xs text-zinc-500 mb-1">عضو إضافي</span>
+                    <span class="block text-xs text-zinc-500 mb-1" data-i18n="extra_lbl">عضو إضافي</span>
                     <span id="res-extra" class="font-bold text-sm text-zinc-200">--</span>
                 </div>
                 <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800/60">
-                    <span class="block text-xs text-zinc-500 mb-1">البروفايل</span>
+                    <span class="block text-xs text-zinc-500 mb-1" data-i18n="profile_lbl">البروفايل</span>
                     <span id="res-profile" class="font-bold text-sm text-zinc-200 truncate">--</span>
                 </div>
             </div>
 
             <!-- Login Buttons -->
             <div class="space-y-3 mb-6">
-                <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">أزرار تسجيل الدخول المباشر:</label>
+                <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2" data-i18n="login_buttons_title">أزرار تسجيل الدخول المباشر:</label>
                 
-                <a id="btn-phone" href="#" target="_blank" class="w-full flex items-center justify-between bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 p-4 rounded-xl transition duration-300 group">
+                <a id="btn-phone" href="#" target="_blank" class="w-full flex items-center justify-between bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 p-3.5 md:p-4 rounded-xl transition duration-300 group">
                     <div class="flex items-center space-x-3 space-x-reverse">
                         <div class="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg">
                             <i class="fa-solid fa-mobile-screen"></i>
                         </div>
                         <div class="text-right">
-                            <strong class="block text-sm group-hover:text-[#E50914] transition">تسجيل دخول الهاتف (Phone Login)</strong>
-                            <span class="text-xs text-zinc-500">فتح مباشر عبر تطبيق أو متصفح الهاتف</span>
+                            <strong class="block text-sm group-hover:text-[#E50914] transition" data-i18n="phone_login">تسجيل دخول الهاتف</strong>
+                            <span class="text-xs text-zinc-500" data-i18n="phone_desc">فتح مباشر عبر تطبيق أو متصفح الهاتف</span>
                         </div>
                     </div>
-                    <i class="fa-solid fa-arrow-left text-zinc-500 group-hover:text-white transition"></i>
+                    <i class="fa-solid fa-arrow-left text-zinc-500 group-hover:text-white transition transform group-hover:-translate-x-1"></i>
                 </a>
 
-                <a id="btn-pc" href="#" target="_blank" class="w-full flex items-center justify-between bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 p-4 rounded-xl transition duration-300 group">
+                <a id="btn-pc" href="#" target="_blank" class="w-full flex items-center justify-between bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 p-3.5 md:p-4 rounded-xl transition duration-300 group">
                     <div class="flex items-center space-x-3 space-x-reverse">
                         <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg">
                             <i class="fa-solid fa-laptop"></i>
                         </div>
                         <div class="text-right">
-                            <strong class="block text-sm group-hover:text-[#E50914] transition">تسجيل دخول الحاسوب (PC Login)</strong>
-                            <span class="text-xs text-zinc-500">فتح مباشر عبر المتصفح المكتبي</span>
+                            <strong class="block text-sm group-hover:text-[#E50914] transition" data-i18n="pc_login">تسجيل دخول الحاسوب</strong>
+                            <span class="text-xs text-zinc-500" data-i18n="pc_desc">فتح مباشر عبر المتصفح المكتبي</span>
                         </div>
                     </div>
-                    <i class="fa-solid fa-arrow-left text-zinc-500 group-hover:text-white transition"></i>
+                    <i class="fa-solid fa-arrow-left text-zinc-500 group-hover:text-white transition transform group-hover:-translate-x-1"></i>
                 </a>
 
-                <a id="btn-tv" href="#" target="_blank" class="w-full flex items-center justify-between bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 p-4 rounded-xl transition duration-300 group">
+                <a id="btn-tv" href="#" target="_blank" class="w-full flex items-center justify-between bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 p-3.5 md:p-4 rounded-xl transition duration-300 group">
                     <div class="flex items-center space-x-3 space-x-reverse">
                         <div class="w-10 h-10 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center text-lg">
                             <i class="fa-solid fa-tv"></i>
                         </div>
                         <div class="text-right">
-                            <strong class="block text-sm group-hover:text-[#E50914] transition">تسجيل دخول التلفاز (TV Login)</strong>
-                            <span class="text-xs text-zinc-500">ربط سريع بالشاشات الذكية (Smart TV)</span>
+                            <strong class="block text-sm group-hover:text-[#E50914] transition" data-i18n="tv_login">تسجيل دخول التلفاز</strong>
+                            <span class="text-xs text-zinc-500" data-i18n="tv_desc">ربط سريع بالشاشات الذكية (Smart TV)</span>
                         </div>
                     </div>
-                    <i class="fa-solid fa-arrow-left text-zinc-500 group-hover:text-white transition"></i>
+                    <i class="fa-solid fa-arrow-left text-zinc-500 group-hover:text-white transition transform group-hover:-translate-x-1"></i>
                 </a>
             </div>
 
             <!-- Cookie Copy Section -->
             <div class="mb-6">
-                <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">أو نسخ الكوكيز (Netscape Format):</label>
+                <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2" data-i18n="copy_label">نسخ الكوكيز (Netscape Format):</label>
                 <div class="relative">
                     <textarea id="cookie-textarea" readonly class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-zinc-400 h-24 resize-none focus:outline-none"></textarea>
                     <button onclick="copyCookies()" class="absolute bottom-3 left-3 bg-zinc-800 hover:bg-zinc-700 text-white text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1 space-x-reverse">
-                        <i class="fa-regular fa-copy ml-1"></i> نسخ الكوكيز
+                        <i class="fa-regular fa-copy ml-1"></i> <span data-i18n="copy_btn">نسخ الكوكيز</span>
                     </button>
                 </div>
             </div>
 
             <!-- Get Another Account -->
-            <button onclick="resetAndReload()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-xl transition text-sm">
-                <i class="fa-solid fa-rotate-right ml-2"></i> مشاهدة إعلان آخر والحصول على حساب جديد
+            <button onclick="resetAndReload()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center space-x-2 space-x-reverse">
+                <i class="fa-solid fa-rotate-right ml-1"></i> <span data-i18n="another_btn">مشاهدة إعلان آخر وحساب جديد</span>
             </button>
         </div>
 
@@ -185,19 +194,166 @@
 
     <!-- Footer -->
     <footer class="w-full py-4 text-center text-xs text-zinc-600 border-t border-zinc-900">
-        &copy; 2026 Netflix Reward System. All rights reserved.
+        &copy; 2026 Netflix Reward System. <span data-i18n="footer_rights">All rights reserved.</span>
     </footer>
 
-    <!-- JavaScript Smart Parsing & ZIP Reader -->
+    <!-- JavaScript Localization & ZIP Engine -->
     <script>
-        let accountsData = [];
+        // قواميس اللغات (عربي، إنجليزي، فرنسي)
+        const translations = {
+            ar: {
+                page_title: "Netflix Reward Portal - احصل على حسابك المجاني",
+                hero_title_1: "احصل على حساب",
+                hero_title_2: "Netflix مدفوع",
+                hero_title_3: "فوراً!",
+                hero_desc: "شاهد إعلاناً قصيراً لدعم الموقع، وسيتم استخراج حساب حقيقي ومفعل مباشرة من الأرشيف.",
+                loading_title: "جاري تهيئة الحسابات...",
+                loading_desc: "يرجى الانتظار قليلاً ليتم تحميل ملف الـ ZIP وفحصه.",
+                loading_btn: "جاري تحميل الأرشيف...",
+                watch_ad_btn: "شاهد الإعلان والفتح الآن",
+                ad_label: "مساحة إعلانية",
+                ad_watching: "جاري عرض الإعلان...",
+                ad_wait: "يرجى الانتظار وعدم إغلاق الصفحة حتى ينتهي العد التنازلي",
+                success_title: "مبروك! تم استخراج الحساب بنجاح",
+                success_desc: "اختر طريقة الدخول المناسبة لجهازك أدناه",
+                plan_lbl: "الخطة",
+                payment_lbl: "نوع الدفع",
+                extra_lbl: "عضو إضافي",
+                profile_lbl: "البروفايل",
+                login_buttons_title: "أزرار تسجيل الدخول المباشر:",
+                phone_login: "تسجيل دخول الهاتف",
+                phone_desc: "فتح مباشر عبر تطبيق أو متصفح الهاتف",
+                pc_login: "تسجيل دخول الحاسوب",
+                pc_desc: "فتح مباشر عبر المتصفح المكتبي",
+                tv_login: "تسجيل دخول التلفاز",
+                tv_desc: "ربط سريع بالشاشات الذكية (Smart TV)",
+                copy_label: "نسخ الكوكيز (Netscape Format):",
+                copy_btn: "نسخ الكوكيز",
+                copy_success: "تم نسخ الكوكيز بنجاح!",
+                another_btn: "مشاهدة إعلان آخر وحساب جديد",
+                footer_rights: "جميع الحقوق محفوظة."
+            },
+            en: {
+                page_title: "Netflix Reward Portal - Get Your Free Account",
+                hero_title_1: "Get a Paid",
+                hero_title_2: "Netflix",
+                hero_title_3: "Account Instantly!",
+                hero_desc: "Watch a short ad to support the site, and a real activated account will be extracted directly from the archive.",
+                loading_title: "Initializing Accounts...",
+                loading_desc: "Please wait while the ZIP file is being downloaded and scanned.",
+                loading_btn: "Loading Archive...",
+                watch_ad_btn: "Watch Ad & Unlock Now",
+                ad_label: "ADVERTISEMENT",
+                ad_watching: "Showing advertisement...",
+                ad_wait: "Please wait and do not close the page until countdown finishes",
+                success_title: "Success! Account Unlocked",
+                success_desc: "Choose your preferred login method below",
+                plan_lbl: "Plan",
+                payment_lbl: "Payment",
+                extra_lbl: "Extra Member",
+                profile_lbl: "Profile",
+                login_buttons_title: "Direct Login Buttons:",
+                phone_login: "Phone Login",
+                phone_desc: "Direct open via phone app or browser",
+                pc_login: "PC Login",
+                pc_desc: "Direct open via desktop browser",
+                tv_login: "TV Login",
+                tv_desc: "Quick connect with Smart TVs",
+                copy_label: "Copy Cookies (Netscape Format):",
+                copy_btn: "Copy Cookies",
+                copy_success: "Cookies copied successfully!",
+                another_btn: "Watch another ad & get new account",
+                footer_rights: "All rights reserved."
+            },
+            fr: {
+                page_title: "Netflix Reward Portal - Obtenez votre compte gratuit",
+                hero_title_1: "Obtenez un compte",
+                hero_title_2: "Netflix payant",
+                hero_title_3: "instantanément !",
+                hero_desc: "Regardez une courte publicité pour soutenir le site, et un compte réel sera extrait directement de l'archive.",
+                loading_title: "Initialisation des comptes...",
+                loading_desc: "Veuillezpatienter pendant le téléchargement et l'analyse du fichier ZIP.",
+                loading_btn: "Chargement de l'archive...",
+                watch_ad_btn: "Regarder la pub & Débloquer",
+                ad_label: "PUBLICITÉ",
+                ad_watching: "Affichage de la publicité...",
+                ad_wait: "Veuillez patienter et ne pas fermer la page",
+                success_title: "Succès ! Compte débloqué",
+                success_desc: "Choisissez votre méthode de connexion ci-dessous",
+                plan_lbl: "Forfait",
+                payment_lbl: "Paiement",
+                extra_lbl: "Membre suppl.",
+                profile_lbl: "Profil",
+                login_buttons_title: "Boutons de connexion directe :",
+                phone_login: "Connexion Téléphone",
+                phone_desc: "Ouverture directe via l'appli ou le navigateur",
+                pc_login: "Connexion PC",
+                pc_desc: "Ouverture directe via le navigateur de bureau",
+                tv_login: "Connexion TV",
+                tv_desc: "Connexion rapide avec les Smart TV",
+                copy_label: "Copier les cookies (Format Netscape) :",
+                copy_btn: "Copier",
+                copy_success: "Cookies copiés avec succès !",
+                another_btn: "Regarder une autre pub & nouveau compte",
+                footer_rights: "Tous droits réservés."
+            }
+        };
 
-        // دالة الفحص الذكي للـ Text داخيل كل ملف في الـ ZIP (نفس خوارزمية بايثون الذكية)
+        let currentLang = 'ar';
+
+        // دالة تغيير لغة الموقع وتحديث النصوص والاتجاه (RTL / LTR)
+        function changeLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('preferred_lang', lang);
+
+            let root = document.getElementById('html-root');
+            let selector = document.getElementById('lang-selector');
+            selector.value = lang;
+
+            if (lang === 'ar') {
+                root.setAttribute('dir', 'rtl');
+                root.setAttribute('lang', 'ar');
+            } else {
+                root.setAttribute('dir', 'ltr');
+                root.setAttribute('lang', lang);
+            }
+
+            // تحديث كافة العناصر التي تحمل الوسم data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                let key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            document.getElementById('page-title').textContent = translations[lang]['page_title'];
+        }
+
+        // الكشف التلقائي عن لغة الهاتف أو المتصفح عند أول دخول
+        function detectUserLanguage() {
+            let savedLang = localStorage.getItem('preferred_lang');
+            if (savedLang && translations[savedLang]) {
+                changeLanguage(savedLang);
+                return;
+            }
+
+            let browserLang = navigator.language || navigator.userLanguage || 'en';
+            let shortLang = browserLang.substring(0, 2).toLowerCase();
+
+            if (translations[shortLang]) {
+                changeLanguage(shortLang);
+            } else {
+                changeLanguage('en'); // اللغة الافتراضية إذا لم تكن مدعومة
+            }
+        }
+
+        // خوارزمية استخراج الكوكيز والبيانات بدقة عالية
         function parseCookieContent(content) {
-            let profile = "Unknown";
-            let country = "Unknown";
-            let plan = "Unknown";
-            let next_billing = "Not Available";
+            let profile = "Netflix User";
+            let country = "US";
+            let plan = "Standard";
+            let next_billing = "Active";
             let extra_member = "No";
             let payment = "CC";
             
@@ -205,84 +361,52 @@
             let secureNetflixId = "";
             let token = "";
 
-            // البحث عن الإيميل واستنتاج البروفايل
-            let emailMatch = content.match(/[\w\.-]+@[\w\.-]+\.\w+/);
-            if (emailMatch) {
-                profile = emailMatch[0].split('@')[0];
-            }
-
             let lines = content.split('\n');
-            lines.forEach(line => {
-                let lower = line.toLowerCase();
-                if (lower.includes('profile:')) {
-                    let parts = line.split(':');
-                    if (parts[1] && parts[1].trim()) profile = parts[1].trim();
+            for (let line of lines) {
+                let trimmed = line.trim();
+                if (trimmed.includes('NetflixId')) {
+                    let parts = trimmed.split(/\s+/);
+                    if (parts.length >= 7) netflixId = parts[6];
+                }
+                if (trimmed.includes('SecureNetflixId')) {
+                    let parts = trimmed.split(/\s+/);
+                    if (parts.length >= 7) secureNetflixId = parts[6];
+                }
+                let lower = trimmed.toLowerCase();
+                if (lower.includes('email:')) {
+                    let p = trimmed.split(':');
+                    if (p[1] && p[1].trim()) profile = p[1].trim().split('@')[0];
                 }
                 if (lower.includes('country:')) {
-                    let parts = line.split(':');
-                    if (parts[1] && parts[1].trim()) country = parts[1].trim().toUpperCase();
-                }
-                if (lower.includes('plan:')) {
-                    let parts = line.split(':');
-                    if (parts[1] && parts[1].trim()) plan = parts[1].trim();
-                }
-                if (lower.includes('billing:')) {
-                    let parts = line.split(':');
-                    if (parts[1] && parts[1].trim()) next_billing = parts[1].trim();
-                }
-                if (lower.includes('extra members:')) {
-                    if (lower.includes('true') || lower.includes('yes')) extra_member = "Yes";
-                }
-            });
-
-            // استخراج كوكيز NetflixId و SecureNetflixId ذسياً
-            let netIdMatch = content.match(/NetflixId\s+([^\s]+)/i);
-            if (netIdMatch) {
-                netflixId = netIdMatch[1];
-            } else {
-                let tokens = content.match(/(ct%3D[^\s]+|v%3D3%26[^\s]+)/g);
-                if (tokens) {
-                    for (let t of tokens) {
-                        if (t.includes('ct%3D')) { netflixId = t; break; }
-                    }
-                }
-                if (!netflixId) {
-                    for (let word of content.split(/\s+/)) {
-                        if (word.length > 150 && (word.includes('%3D') || word.includes('Bgi') || word.includes('Bq'))) {
-                            netflixId = word;
-                            break;
-                        }
-                    }
+                    let p = trimmed.split(':');
+                    if (p[1] && p[1].trim()) country = p[1].trim().toUpperCase();
                 }
             }
 
-            let secIdMatch = content.match(/SecureNetflixId\s+([^\s]+)/i);
-            if (secIdMatch) {
-                secureNetflixId = secIdMatch[1];
-            } else {
-                for (let word of content.split(/\s+/)) {
-                    if (word.includes('mac%3D') || word.includes('v%3D3%26mac')) {
-                        secureNetflixId = word;
-                        break;
-                    }
-                }
+            if (!netflixId) {
+                let match = content.match(/NetflixId\s+([^\s]+)/i);
+                if (match) netflixId = match[1];
+            }
+            if (!secureNetflixId) {
+                let match = content.match(/SecureNetflixId\s+([^\s]+)/i);
+                if (match) secureNetflixId = match[1];
             }
 
-            // استخراج الـ Token للروابط
             try {
                 let decoded = decodeURIComponent(netflixId);
-                if (decoded.includes('ct%3D')) {
+                if (decoded.includes('ct=')) {
+                    token = decoded.split('ct=')[1].split('&')[0];
+                } else if (decoded.includes('ct%3D')) {
                     token = decoded.split('ct%3D')[1].split('%26')[0];
                 } else {
                     token = netflixId;
                 }
-            } catch(e) {
+            } catch (e) {
                 token = netflixId;
             }
 
-            if (!token) {
-                let tokenMatch = content.match(/nftoken=([A-Za-z0-9_%+-]+)/);
-                if (tokenMatch) token = tokenMatch[1];
+            if (token) {
+                token = token.replace(/&v=.*$/, '').replace(/%26v%3D.*$/, '');
             }
 
             return {
@@ -293,11 +417,15 @@
             };
         }
 
-        // تحميل ملف الـ ZIP مباشرة وفكه عند فتح الصفحة
+        let accountsData = [];
+
+        // جلب ملف الـ ZIP وفكه عند الفتح
         window.addEventListener('DOMContentLoaded', async () => {
+            detectUserLanguage(); // تفعيل كشف اللغة التلقائي
+
             try {
                 let response = await fetch('netflix_cookie.zip');
-                if (!response.ok) throw new Error('فشل تحميل ملف الـ ZIP');
+                if (!response.ok) throw new Error('Zip file not found');
                 
                 let blob = await response.blob();
                 let zip = new JSZip();
@@ -310,33 +438,34 @@
                     let text = await file.async('text');
                     let parsedAcc = parseCookieContent(text);
                     
-                    // إذا وجدنا الكوكي الأساسية، نضيفه للقائمة المتاحة للمستخدمين
                     if (parsedAcc.netflix_id) {
                         accountsData.push(parsedAcc);
                     }
                 }
 
                 if (accountsData.length > 0) {
-                    document.getElementById('status-title').textContent = "جاهز للتوزيع!";
-                    document.getElementById('status-desc').textContent = `تم تحميل وفحص ${accountsData.length} حساب بنجاح من الـ ZIP.`;
                     let btn = document.getElementById('main-reward-btn');
                     btn.disabled = false;
                     btn.classList.remove('bg-zinc-700', 'text-zinc-400', 'cursor-not-allowed');
-                    btn.classList.add('netflix-red', 'text-white');
-                    btn.innerHTML = '<i class="fa-solid fa-tv ml-2"></i> شاهد الإعلان والفتح الآن';
+                    btn.classList.add('netflix-red', 'text-white', 'pulse-btn');
+                    
+                    // تحديث نص الزر حسب اللغة الحالية
+                    btn.innerHTML = `<i class="fa-solid fa-tv ml-2"></i> <span>${translations[currentLang]['watch_ad_btn']}</span>`;
+                    document.getElementById('status-title').textContent = currentLang === 'ar' ? "الحسابات جاهزة!" : (currentLang === 'fr' ? "Comptes prêts !" : "Accounts Ready!");
+                    document.getElementById('status-desc').textContent = `${accountsData.length} accounts loaded successfully.`;
                 } else {
-                    document.getElementById('status-title').textContent = "تنبيه";
-                    document.getElementById('status-desc').textContent = "لم يتم العثور على حسابات صالحة داخل ملف الـ ZIP.";
+                    document.getElementById('status-title').textContent = "Empty Archive";
+                    document.getElementById('status-desc').textContent = "No valid accounts found in ZIP.";
                 }
 
             } catch (error) {
-                console.error("خطأ:", error);
-                document.getElementById('status-title').textContent = "خطأ في التحميل";
-                document.getElementById('status-desc').textContent = "تأكد من رفع ملف netflix_cookie.zip بجانب ملف index.html في GitHub.";
+                console.error("Error:", error);
+                document.getElementById('status-title').textContent = "Error Loading ZIP";
+                document.getElementById('status-desc').textContent = "Make sure netflix_cookie.zip is uploaded next to index.html";
             }
         });
 
-        // بدء الإعلان
+        // تشغيل الإعلان والعد التنازلي
         function startAdProcess() {
             document.getElementById('ad-trigger-box').classList.add('hidden');
             document.getElementById('ad-player-box').classList.remove('hidden');
@@ -360,25 +489,23 @@
             }, 1000);
         }
 
-        // اختيار حساب عشوائي وعرضه بعد انتهاء الإعلان
+        // جلب حساب عشوائي بعد الإعلان
         function finishAdReward() {
             document.getElementById('ad-player-box').classList.add('hidden');
             
             let randomAcc = accountsData[Math.floor(Math.random() * accountsData.length)];
             
-            document.getElementById('res-country').textContent = randomAcc.country || 'ZM';
+            document.getElementById('res-country').textContent = randomAcc.country || 'US';
             document.getElementById('res-plan').textContent = randomAcc.plan || 'Standard';
             document.getElementById('res-payment').textContent = randomAcc.payment || 'CC';
             document.getElementById('res-extra').textContent = randomAcc.extra_member || 'No';
-            document.getElementById('res-profile').textContent = randomAcc.profile || 'Netflix User';
+            document.getElementById('res-profile').textContent = randomAcc.profile || 'User';
 
-            // بناء روابط الدخول السريع
             let token = randomAcc.token || '';
-            document.getElementById('btn-phone').href = `https://netflix.com/unsupported?nftoken=${token}`;
-            document.getElementById('btn-pc').href = `https://netflix.com/login?nftoken=${token}`;
-            document.getElementById('btn-tv').href = `https://netflix.com/tv8?nftoken=${token}`;
+            document.getElementById('btn-phone').href = `https://www.netflix.com/unsupported?nftoken=${token}`;
+            document.getElementById('btn-pc').href = `https://www.netflix.com/login?nftoken=${token}`;
+            document.getElementById('btn-tv').href = `https://www.netflix.com/tv8?nftoken=${token}`;
 
-            // كتابة الكوكيز
             let cookieText = `.netflix.com\tTRUE\t/\tTRUE\t1814123745\tNetflixId\t${randomAcc.netflix_id}\n.netflix.com\tTRUE\t/\tTRUE\t1814123745\tSecureNetflixId\t${randomAcc.secure_netflix_id}`;
             document.getElementById('cookie-textarea').value = cookieText;
 
@@ -389,7 +516,7 @@
             let textArea = document.getElementById('cookie-textarea');
             textArea.select();
             document.execCommand('copy');
-            alert('تم نسخ الكوكيز بنجاح!');
+            alert(translations[currentLang]['copy_success']);
         }
 
         function resetAndReload() {
