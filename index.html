@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- JSZip -->
+    <!-- JSZip للتعامل مع ملف الـ ZIP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -89,7 +89,7 @@
             <p class="text-zinc-400 text-xs mb-4" data-i18n="cooldown_desc">يمكنك طلب حساب جديد بعد انقضاء الوقت التالي:</p>
             <div id="cooldown-timer-display" class="text-3xl md:text-4xl font-black text-yellow-500 tracking-wider mb-6">40:00</div>
             
-            <!-- زر مشاهدة الإعلان الجديد أثناء فترة الانتظار -->
+            <!-- زر مشاهدة الإعلان الإضافي أثناء فترة الانتظار -->
             <button onclick="startSupportAdProcess()" class="w-full netflix-red text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-300 flex items-center justify-center space-x-2 space-x-reverse shadow-lg">
                 <i class="fa-solid fa-tv ml-2"></i> <span data-i18n="support_ad_btn">مشاهدة الإعلان للحصول على حساب</span>
             </button>
@@ -242,7 +242,7 @@
                 copy_success: "تم نسخ الكوكيز بنجاح!",
                 cooldown_title: "لقد حصلت على حسابك بالفعل!",
                 cooldown_desc: "يمكنك طلب حساب جديد بعد انقضاء الوقت التالي:",
-                support_thank: "شكراً لدعمك المستمر للموقع! وقت الانتظار لا زال سارياً، يجيب الانتظار حتى ينتهي العداد للحصول على حساب جديد.",
+                support_thank: "شكراً لدعمك المستمر للموقع! وقت الانتظار لا زال سارياً، يجب الانتظار حتى ينتهي العداد للحصول على حساب جديد.",
                 footer_rights: "جميع الحقوق محفوظة."
             },
             en: {
@@ -569,15 +569,12 @@
             }, 1000);
         }
 
-        // عند مشاهدة إعلان الدعم: تظهر رسالة التنبيه ولا يُمنح حساب جديد
         function finishSupportAdReward() {
             document.getElementById('ad-player-box').classList.add('hidden');
             document.getElementById('cooldown-box').classList.remove('hidden');
-            
             alert(translations[currentLang]['support_thank']);
         }
 
-        // عند انتهاء الإعلان الرئيسي: منح الحساب وتفعيل الحظر 40 دقيقة
         function finishAdReward() {
             document.getElementById('ad-player-box').classList.add('hidden');
             
@@ -610,5 +607,8 @@
             alert(translations[currentLang]['copy_success']);
         }
     </script>
+
+    <!-- كود إعلانات Adsterra (Social Bar) -->
+    <script src="https://pl31765811.profitableratecpmnetwork.com/4c/56/5c/4c565c797461da52cc095165b8b778e8.js"></script>
 </body>
 </html>
