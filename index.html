@@ -80,14 +80,19 @@
             </button>
         </div>
 
-        <!-- Cooldown Box (Appears if user tries within 40 minutes) -->
+        <!-- Cooldown Box (Appears during the 40-minute lockout) -->
         <div id="cooldown-box" class="hidden glass-card w-full max-w-md p-6 md:p-8 rounded-2xl text-center shadow-2xl border border-yellow-500/30">
             <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-yellow-500 text-2xl">
                 <i class="fa-solid fa-clock"></i>
             </div>
             <h3 class="text-xl font-bold mb-2" data-i18n="cooldown_title">لقد حصلت على حسابك بالفعل!</h3>
             <p class="text-zinc-400 text-xs mb-4" data-i18n="cooldown_desc">يمكنك طلب حساب جديد بعد انقضاء الوقت التالي:</p>
-            <div id="cooldown-timer-display" class="text-3xl md:text-4xl font-black text-yellow-500 tracking-wider">40:00</div>
+            <div id="cooldown-timer-display" class="text-3xl md:text-4xl font-black text-yellow-500 tracking-wider mb-6">40:00</div>
+            
+            <!-- زر مشاهدة الإعلان الجديد أثناء فترة الانتظار -->
+            <button onclick="startSupportAdProcess()" class="w-full netflix-red text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-300 flex items-center justify-center space-x-2 space-x-reverse shadow-lg">
+                <i class="fa-solid fa-tv ml-2"></i> <span data-i18n="support_ad_btn">مشاهدة الإعلان للحصول على حساب</span>
+            </button>
         </div>
 
         <!-- Ad Playing Modal / Box -->
@@ -215,6 +220,7 @@
                 loading_desc: "يرجى الانتظار قليلاً...",
                 loading_btn: "جاري التحميل...",
                 watch_ad_btn: "شاهد الإعلان والفتح الآن",
+                support_ad_btn: "مشاهدة الإعلان للحصول على حساب",
                 ad_label: "مساحة إعلانية",
                 ad_watching: "جاري عرض الإعلان...",
                 ad_wait: "يرجى الانتظار وعدم إغلاق الصفحة حتى ينتهي العد التنازلي",
@@ -236,6 +242,7 @@
                 copy_success: "تم نسخ الكوكيز بنجاح!",
                 cooldown_title: "لقد حصلت على حسابك بالفعل!",
                 cooldown_desc: "يمكنك طلب حساب جديد بعد انقضاء الوقت التالي:",
+                support_thank: "شكراً لدعمك المستمر للموقع! وقت الانتظار لا زال سارياً، يجيب الانتظار حتى ينتهي العداد للحصول على حساب جديد.",
                 footer_rights: "جميع الحقوق محفوظة."
             },
             en: {
@@ -248,6 +255,7 @@
                 loading_desc: "Please wait a moment...",
                 loading_btn: "Loading...",
                 watch_ad_btn: "Watch Ad & Unlock Now",
+                support_ad_btn: "Watch ad to get an account",
                 ad_label: "ADVERTISEMENT",
                 ad_watching: "Showing advertisement...",
                 ad_wait: "Please wait and do not close the page until countdown finishes",
@@ -269,6 +277,7 @@
                 copy_success: "Cookies copied successfully!",
                 cooldown_title: "You already claimed an account!",
                 cooldown_desc: "You can request a new account after:",
+                support_thank: "Thank you for your support! The cooldown is still active, please wait for the timer to expire.",
                 footer_rights: "All rights reserved."
             },
             fr: {
@@ -281,6 +290,7 @@
                 loading_desc: "Veuillez patienter un instant...",
                 loading_btn: "Chargement...",
                 watch_ad_btn: "Regarder la pub & Débloquer",
+                support_ad_btn: "Regarder la pub pour obtenir un compte",
                 ad_label: "PUBLICITÉ",
                 ad_watching: "Affichage de la publicité...",
                 ad_wait: "Veuillez patienter et ne pas fermer la page",
@@ -302,11 +312,13 @@
                 copy_success: "Cookies copiés avec succès !",
                 cooldown_title: "Vous avez déjà réclamé un compte !",
                 cooldown_desc: "Vous pouvez demander un nouveau compte après :",
+                support_thank: "Merci pour votre soutien ! Le temps d'attente est toujours actif, veuillez patienter.",
                 footer_rights: "Tous droits réservés."
             }
         };
 
         let currentLang = 'ar';
+        let isSupportAd = false;
 
         function changeLanguage(lang) {
             if (!translations[lang]) return;
@@ -350,8 +362,7 @@
             }
         }
 
-        // نظام التحقق من وقت الانتظار (40 دقيقة)
-        const COOLDOWN_DURATION = 40 * 60 * 1000; // 40 دقيقة بالمللي ثانية
+        const COOLDOWN_DURATION = 40 * 60 * 1000; // 40 دقيقة
 
         function checkCooldownOnLoad() {
             let nextAllowedTime = localStorage.getItem('netflix_next_allowed');
@@ -367,18 +378,27 @@
             return false;
         }
 
+        let cdIntervalGlobal = null;
+
         function lockUIWithCooldown(remainingTime) {
             document.getElementById('ad-trigger-box').classList.add('hidden');
             document.getElementById('cooldown-box').classList.remove('hidden');
 
             let timerDisplay = document.getElementById('cooldown-timer-display');
 
-            let cdInterval = setInterval(() => {
+            if (cdIntervalGlobal) clearInterval(cdIntervalGlobal);
+
+            cdIntervalGlobal = setInterval(() => {
                 let now = Date.now();
-                let timeLeft = parseInt(localStorage.getItem('netflix_next_allowed')) - now;
+                let targetTime = localStorage.getItem('netflix_next_allowed');
+                if (!targetTime) {
+                    clearInterval(cdIntervalGlobal);
+                    return;
+                }
+                let timeLeft = parseInt(targetTime) - now;
 
                 if (timeLeft <= 0) {
-                    clearInterval(cdInterval);
+                    clearInterval(cdIntervalGlobal);
                     localStorage.removeItem('netflix_next_allowed');
                     document.getElementById('cooldown-box').classList.add('hidden');
                     document.getElementById('ad-trigger-box').classList.remove('hidden');
@@ -468,9 +488,7 @@
 
         window.addEventListener('DOMContentLoaded', async () => {
             detectUserLanguage();
-            
-            // التحقق من وجود حظر مؤقت نشط (40 دقيقة)
-            let isCooldownActive = checkCooldownOnLoad();
+            checkCooldownOnLoad();
 
             try {
                 let response = await fetch('netflix_cookie.zip');
@@ -514,7 +532,18 @@
         });
 
         function startAdProcess() {
+            isSupportAd = false;
+            runAdPlayer();
+        }
+
+        function startSupportAdProcess() {
+            isSupportAd = true;
+            runAdPlayer();
+        }
+
+        function runAdPlayer() {
             document.getElementById('ad-trigger-box').classList.add('hidden');
+            document.getElementById('cooldown-box').classList.add('hidden');
             document.getElementById('ad-player-box').classList.remove('hidden');
 
             let timeLeft = 10;
@@ -531,15 +560,27 @@
 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    finishAdReward();
+                    if (isSupportAd) {
+                        finishSupportAdReward();
+                    } else {
+                        finishAdReward();
+                    }
                 }
             }, 1000);
         }
 
+        // عند مشاهدة إعلان الدعم: تظهر رسالة التنبيه ولا يُمنح حساب جديد
+        function finishSupportAdReward() {
+            document.getElementById('ad-player-box').classList.add('hidden');
+            document.getElementById('cooldown-box').classList.remove('hidden');
+            
+            alert(translations[currentLang]['support_thank']);
+        }
+
+        // عند انتهاء الإعلان الرئيسي: منح الحساب وتفعيل الحظر 40 دقيقة
         function finishAdReward() {
             document.getElementById('ad-player-box').classList.add('hidden');
             
-            // تفعيل حظر الـ 40 دقيقة وحفظه في الذاكرة المحلية للمتصفح
             let unlockTime = Date.now() + COOLDOWN_DURATION;
             localStorage.setItem('netflix_next_allowed', unlockTime);
 
