@@ -89,24 +89,42 @@
             <p class="text-zinc-400 text-xs mb-4" data-i18n="cooldown_desc">يمكنك طلب حساب جديد بعد انقضاء الوقت التالي:</p>
             <div id="cooldown-timer-display" class="text-3xl md:text-4xl font-black text-yellow-500 tracking-wider mb-6">40:00</div>
             
-            <!-- زر مشاهدة الإعلان الإضافي أثناء فترة الانتظار -->
             <button onclick="startSupportAdProcess()" class="w-full netflix-red text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-300 flex items-center justify-center space-x-2 space-x-reverse shadow-lg">
                 <i class="fa-solid fa-tv ml-2"></i> <span data-i18n="support_ad_btn">مشاهدة الإعلان للحصول على حساب</span>
             </button>
         </div>
 
-        <!-- Ad Playing Modal / Box -->
+        <!-- Native Banner Ad (Placed nicely under the action boxes) -->
+        <div class="my-4 flex justify-center w-full max-w-md overflow-hidden rounded-lg">
+            <script async="async" data-cfasync="false" src="https://pl31765878.profitableratecpmnetwork.com/027c19b7cd3dfbd3e0f98814a136831c/invoke.js"></script>
+            <div id="container-027c19b7cd3dfbd3e0f98814a136831c"></div>
+        </div>
+
+        <!-- Ad Playing Modal / Box (Contains 300x250 Banner) -->
         <div id="ad-player-box" class="hidden glass-card w-full max-w-xl p-6 md:p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-zinc-800">
                 <div id="ad-progress-bar" class="h-full bg-[#E50914] w-0 transition-all duration-1000"></div>
             </div>
             <span class="bg-[#E50914]/20 text-[#E50914] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider" data-i18n="ad_label">مساحة إعلانية</span>
             
-            <div class="my-8 py-10 border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center">
-                <i class="fa-solid fa-rectangle-ad text-4xl md:text-5xl text-zinc-600 mb-4 animate-bounce"></i>
-                <p class="text-base md:text-lg font-semibold text-zinc-300" data-i18n="ad_watching">جاري عرض الإعلان...</p>
-                <p id="countdown-timer" class="text-3xl md:text-4xl font-black text-[#E50914] mt-3">10</p>
-                <p class="text-xs text-zinc-500 mt-2" data-i18n="ad_wait">يرجى الانتظار وعدم إغلاق الصفحة حتى ينتهي العد التنازلي</p>
+            <div class="my-4 py-4 border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center">
+                <p class="text-base font-semibold text-zinc-300 mb-2" data-i18n="ad_watching">جاري عرض الإعلان...</p>
+                <p id="countdown-timer" class="text-3xl font-black text-[#E50914]">10</p>
+                <p class="text-xs text-zinc-500 mt-1" data-i18n="ad_wait">يرجى الانتظار وعدم إغلاق الصفحة</p>
+                
+                <!-- إعلان Banner 300x250 يظهر أثناء انتظار العد التنازلي -->
+                <div class="mt-4 flex justify-center overflow-hidden rounded-lg bg-black/40 p-2">
+                    <script>
+                      atOptions = {
+                        'key' : '9e07ec629c2acc7df5a423f49771a862',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                      };
+                    </script>
+                    <script src="https://www.highrevenueformat.com/9e07ec629c2acc7df5a423f49771a862/invoke.js"></script>
+                </div>
             </div>
         </div>
 
@@ -198,6 +216,20 @@
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Banner 320x50 (Placed nicely at the bottom of main container) -->
+        <div class="my-4 flex justify-center overflow-hidden rounded-lg">
+            <script>
+              atOptions = {
+                'key' : 'c659fc9dcc666dc55a4e9c826d7ff12a',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            </script>
+            <script src="https://www.highrevenueformat.com/c659fc9dcc666dc55a4e9c826d7ff12a/invoke.js"></script>
         </div>
 
     </main>
