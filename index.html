@@ -94,36 +94,20 @@
             </button>
         </div>
 
-        <!-- Native Banner Ad -->
-        <div class="my-4 flex justify-center w-full max-w-md overflow-hidden rounded-lg">
-            <script async="async" data-cfasync="false" src="https://pl31765878.profitableratecpmnetwork.com/027c19b7cd3dfbd3e0f98814a136831c/invoke.js"></script>
-            <div id="container-027c19b7cd3dfbd3e0f98814a136831c"></div>
-        </div>
-
-        <!-- Ad Playing Modal / Box -->
-        <div id="ad-player-box" class="hidden glass-card w-full max-w-xl p-6 md:p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
+        <!-- Ad Playing Box (متناسق وثابت في نفس مكان صندوق البداية تماماً لكي لا يختفي العداد) -->
+        <div id="ad-player-box" class="hidden glass-card w-full max-w-md p-6 md:p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-zinc-800">
                 <div id="ad-progress-bar" class="h-full bg-[#E50914] w-0 transition-all duration-1000"></div>
             </div>
             <span class="bg-[#E50914]/20 text-[#E50914] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider" data-i18n="ad_label">مساحة إعلانية</span>
             
-            <div class="my-4 pt-2">
-                <p class="text-base font-semibold text-zinc-300 mb-1" data-i18n="ad_watching">جاري عرض الإعلان...</p>
-                <p id="countdown-timer" class="text-5xl font-black text-[#E50914] my-2">20</p>
-                <p class="text-xs text-zinc-500" data-i18n="ad_wait">يرجى الانتظار وعدم إغلاق الصفحة</p>
-            </div>
-            
-            <div class="mt-4 pt-4 border-t border-zinc-800 flex justify-center overflow-hidden rounded-lg bg-black/40 p-2">
-                <script>
-                  atOptions = {
-                    'key' : '9e07ec629c2acc7df5a423f49771a862',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                  };
-                </script>
-                <script src="https://www.highrevenueformat.com/9e07ec629c2acc7df5a423f49771a862/invoke.js"></script>
+            <div class="my-6">
+                <div class="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4 text-[#E50914] text-2xl animate-pulse">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+                <p class="text-sm font-semibold text-zinc-300 mb-2" data-i18n="ad_watching">جاري عرض الإعلان...</p>
+                <p id="countdown-timer" class="text-5xl font-black text-[#E50914] my-3">20</p>
+                <p class="text-xs text-zinc-500 mt-2" data-i18n="ad_wait">يرجى الانتظار وعدم إغلاق الصفحة حتى يتم تجهيز حسابك</p>
             </div>
         </div>
 
@@ -217,6 +201,12 @@
             </div>
         </div>
 
+        <!-- Native Banner Ad (أسفل المحتوى الأساسي) -->
+        <div class="my-4 flex justify-center w-full max-w-md overflow-hidden rounded-lg">
+            <script async="async" data-cfasync="false" src="https://pl31765878.profitableratecpmnetwork.com/027c19b7cd3dfbd3e0f98814a136831c/invoke.js"></script>
+            <div id="container-027c19b7cd3dfbd3e0f98814a136831c"></div>
+        </div>
+
         <!-- Banner 320x50 -->
         <div class="my-4 flex justify-center overflow-hidden rounded-lg">
             <script>
@@ -246,16 +236,16 @@
                 hero_title_1: "احصل على حساب",
                 hero_title_2: "Netflix مدفوع",
                 hero_title_3: "فوراً!",
-                hero_desc: "شاهد إعلاناً قصيراً لدعم الموقع، وسيتم استخراج حساب حقيقي ومفعل مباشرة من الأرشيف.",
-                loading_title: "جاري تحميل الأرشيف...",
+                hero_desc: "شاهد إعلاناً قصيراً لدعم الموقع، وسيتم فحص واستخراج حساب شغال ومفعل تلقائياً.",
+                loading_title: "جاري فحص الحسابات الشغالة...",
                 loading_desc: "يرجى الانتظار قليلاً...",
                 loading_btn: "جاري التحميل...",
-                watch_ad_btn: "شاهد الإعلان والحصول على حساب",
+                watch_ad_btn: "شاهد الإعلان والحصول على حساب شغال",
                 support_ad_btn: "مشاهدة الإعلان للحصول على حساب",
                 ad_label: "مساحة إعلانية",
                 ad_watching: "جاري عرض الإعلان...",
-                ad_wait: "يرجى الانتظار وعدم إغلاق الصفحة",
-                success_title: "مبروك! تم استخراج الحساب بنجاح",
+                ad_wait: "يرجى الانتظار وعدم إغلاق الصفحة حتى يتم تجهيز حسابك",
+                success_title: "مبروك! تم فحص واستخراج حساب شغال بنجاح",
                 success_desc: "اختر طريقة الدخول المناسبة لجهازك أدناه",
                 plan_lbl: "الخطة",
                 payment_lbl: "نوع الدفع",
@@ -281,16 +271,16 @@
                 hero_title_1: "Get a Paid",
                 hero_title_2: "Netflix",
                 hero_title_3: "Account Instantly!",
-                hero_desc: "Watch a short ad to support the site, and a real activated account will be extracted directly from the archive.",
-                loading_title: "Initializing Archive...",
+                hero_desc: "Watch a short ad to support the site, and an active working account will be extracted automatically.",
+                loading_title: "Checking active accounts...",
                 loading_desc: "Please wait a moment...",
                 loading_btn: "Loading...",
-                watch_ad_btn: "Watch Ad & Get Account",
+                watch_ad_btn: "Watch Ad & Get Working Account",
                 support_ad_btn: "Watch ad to get an account",
                 ad_label: "ADVERTISEMENT",
                 ad_watching: "Showing advertisement...",
-                ad_wait: "Please wait and do not close the page",
-                success_title: "Success! Account Unlocked",
+                ad_wait: "Please wait and do not close the page until your account is ready",
+                success_title: "Success! Working Account Extracted",
                 success_desc: "Choose your preferred login method below",
                 plan_lbl: "Plan",
                 payment_lbl: "Payment",
@@ -316,16 +306,16 @@
                 hero_title_1: "Obtenez un compte",
                 hero_title_2: "Netflix payant",
                 hero_title_3: "instantanément !",
-                hero_desc: "Regardez une courte publicité pour soutenir le site, et un compte réel sera extrait directement de l'archive.",
-                loading_title: "Initialisation...",
+                hero_desc: "Regardez une courte publicité et un compte actif sera extrait automatiquement.",
+                loading_title: "Vérification des comptes actifs...",
                 loading_desc: "Veuillez patienter un instant...",
                 loading_btn: "Chargement...",
                 watch_ad_btn: "Regarder la pub & Obtenir un compte",
                 support_ad_btn: "Regarder la pub pour obtenir un compte",
                 ad_label: "PUBLICITÉ",
                 ad_watching: "Affichage de la publicité...",
-                ad_wait: "Veuillez patienter et ne pas fermer la page",
-                success_title: "Succès ! Compte débloqué",
+                ad_wait: "Veuillez patienter et ne pas fermer la page jusqu'à ce que votre compte soit prêt",
+                success_title: "Succès ! Compte actif extrait",
                 success_desc: "Choisissez votre méthode de connexion ci-dessous",
                 plan_lbl: "Forfait",
                 payment_lbl: "Paiement",
@@ -441,7 +431,6 @@
             }, 1000);
         }
 
-        // دالة تحليل وقراءة محتوى الملفات واستخراج البيانات والتوكنات بدقة
         function parseCookieContent(content) {
             let profile = "User";
             let country = "US";
@@ -538,7 +527,6 @@
                     let text = await file.async('text');
                     let parsedAcc = parseCookieContent(text);
                     
-                    // قبول أي ملف يحتوي على Token أو NetflixId صالح
                     if (parsedAcc.token || parsedAcc.netflix_id) {
                         accountsData.push(parsedAcc);
                     }
@@ -613,7 +601,6 @@
             alert(translations[currentLang]['support_thank']);
         }
 
-        // اختيار حساب عشوائي فريد ومختلف لكل مستخدم دون تكرار في الجلسة
         function finishAdReward() {
             document.getElementById('ad-player-box').classList.add('hidden');
             
