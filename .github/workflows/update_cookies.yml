@@ -1,0 +1,28 @@
+name: Auto Clean and Update Netflix Cookies
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # يعمل تلقائياً كل يوم في منتصف الليل (UTC)
+  workflow_dispatch: # يتيح لك زر لتشغيل الفحص يدوياً متى شئت من غيت هب
+
+jobs:
+  update-cookies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run update script
+        run: python update_cookies.py
+
+      - name: Commit and push if zip changed
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add netflix_cookie.zip
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-removed expired Netflix cookies [skip ci]" && git push)
