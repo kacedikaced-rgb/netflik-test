@@ -2,8 +2,11 @@ name: Auto Clean and Update Netflix Cookies
 
 on:
   schedule:
-    - cron: '0 0 * * *' # يعمل تلقائياً كل يوم في منتصف الليل (UTC)
-  workflow_dispatch: # يتيح لك زر لتشغيل الفحص يدوياً متى شئت من غيت هب
+    - cron: '0 0 * * *' # يعمل تلقائياً كل يوم في منتصف الليل
+  workflow_dispatch: # زر للتشغيل اليدوي
+
+permissions:
+  contents: write  # <--- هذا هو السطر المهم الذي يمنح صلاحية الرفع للمستودع
 
 jobs:
   update-cookies:
